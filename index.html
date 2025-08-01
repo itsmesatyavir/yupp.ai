@@ -253,7 +253,7 @@
     feedbackTextElement.textContent = '...';
 
     try {
-      const requestPrompt = "Generate a single thought-provoking question. On a new line, provide brief, direct, and human-like feedback why was interesting, negative or impactful. Use '|||' as a separator between the question and the feedback. Avoid starting the feedback with predictable phrases like 'This question prompts...' or 'This is a good question because...' Don't Use Word question in feedback. Be direct and natural.";
+      const requestPrompt = "Generate a single thought-provoking question. On a new line, provide brief, direct, and human-like thankyou feedback and interesting, negative or impactful. Use '|||' as a separator between the question and the feedback. Avoid starting the feedback with predictable phrases like 'This question prompts...' or 'This is a good question because...' Don't Use Word "question" in feedback. Be direct and natural.";
 
       const response = await fetch(API_URL, {
         method: "POST",
