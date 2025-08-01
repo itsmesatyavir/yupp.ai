@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Yupp.ai Prompt Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9fafb;
+      color: #111;
+      padding: 30px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 90vh;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    #outputBox {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: left;
+    }
+    .output-block {
+      margin-bottom: 25px;
+      position: relative; /* Needed for positioning the copy button */
+      padding-right: 60px; /* Make space for the copy button */
+    }
+    .output-block:last-child {
+      margin-bottom: 0;
+    }
+    .label {
+      font-weight: bold;
+      color: #333;
+      font-size: 1.1rem;
+    }
+    .value {
+      color: #444;
+      margin-top: 10px;
+      white-space: pre-wrap;
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+    #feedback {
+      font-size: 1rem;
+      font-style: italic;
+      line-height: 1.5;
+    }
+    button {
+      padding: 12px 28px;
+      font-size: 1.1rem;
+      background-color: #111827;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #1f2937;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 0.8rem;
+      padding: 5px 10px;
+      background: #e5e7eb;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .copy-btn:hover {
+      background-color: #d1d5db;
+    }
+    .footer {
+      margin-top: 40px;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 20px;
+      width: 100%;
+      max-width: 700px;
+    }
+    .link-btn {
+      margin: 5px 10px;
+      padding: 10px 20px;
+      border-radius: 6px;
+      background-color: #3b82f6;
+      color: white;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    .link-btn:hover {
+      background-color: #2563eb;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Yupp.ai Prompt Generator</h1>
+
+  <div id="outputBox">
+    <div class="output-block">
+      <div class="label">› Question:</div>
+      <div id="question" class="value">Click the button below to get a prompt.</div>
+      <button class="copy-btn" onclick="copyToClipboard(event, 'question')">COPY</button>
+    </div>
+    <div class="output-block">
+      <div class="label">› Feedback:</div>
+      <div id="feedback" class="value">Your feedback will appear here.</div>
+      <button class="copy-btn" onclick="copyToClipboard(event, 'feedback')">COPY</button>
+    </div>
+  </div>
+
+  <button onclick="generatePrompt()">› Get New Prompt</button>
+
+  <div class="footer">
+    <a class="link-btn" href="https://t.me/forestarmy" target="_blank">↳ Telegram</a>
+    <a class="link-btn" href="https://googleusercontent.com/youtube.com/1" target="_blank">↳ YouTube</a>
+    <a class="link-btn" href="https://github.com/itsmesatyavir" target="_blank">↳ GitHub</a>
+  </div>
+
+  <script>
+    // --- Heavily expanded word lists for 5,000+ combinations ---
+    const subjects = [
+        "True sentient AI", "Global-scale automation", "Digital consciousness uploads", "Advanced genetic editing", "Interplanetary colonization", 
+        "Decentralized autonomous organizations (DAOs)", "The Solana ecosystem", "Blockchain technology", "Widespread cryptocurrency adoption", "On-chain randomness oracles",
+        "Quantum computing supremacy", "AI-driven art and music", "The Metaverse's societal framework", "Longevity escape velocity", "Decentralized physical infrastructure (DePIN)",
+        "Zero-knowledge proofs", "The tokenization of real-world assets", "AI's role in scientific discovery", "Brain-computer interfaces (BCIs)", "AI-powered governance models",
+        "The simulation hypothesis", "Post-scarcity economics"
+    ];
+    const actions = [
+        "redefine our concept of", "impact the future of", "challenge our assumptions about", "successfully transform", "alter the fundamental nature of", 
+        "force us to reconsider", "create a new paradigm for", "blur the lines between", "successfully disrupt", "permanently reshape", 
+        "introduce unforeseen risks for", "necessitate a re-evaluation of", "create cascading effects on", "accelerate the evolution of", "challenge the sovereignty of",
+        "democratize access to", "create existential opportunities for"
+    ];
+    const topics = [
+        "human identity?", "the global financial world?", "ethical boundaries?", "digital ownership and NFTs?", "the human experience?", 
+        "economic stability?", "the concept of a nation-state?", "decentralized governance?", "creative expression?", "geopolitical power dynamics?", 
+        "the definition of life?", "long-term human survival?", "the very fabric of reality?", "trust in institutions?", "social cohesion?", "the nature of consciousness?"
+    ];
+
+    const feedbacks = [
+        "A truly thought-provoking question that gets to the core of the issue.", "This is a classic dilemma, and framing it this way is quite insightful.", "Excellent question. The implications of this are vast and complex.",
+        "This is a topic that future generations will have to grapple with directly.", "Pondering this really highlights the challenges that lie ahead.", "A fascinating and slightly unsettling question to consider.",
+        "The philosophical weight of this question is significant.", "This query forces a confrontation with uncomfortable future realities.", "A perfectly articulated question for a deep debate on Web3.",
+        "This explores the intersection of technology and society beautifully.", "This question sits at the bleeding edge of technological ethics.", "A critical consideration for the architects of our future.",
+        "Unpacking this would require expertise from multiple different fields.", "This is the kind of question that keeps futurists up at night.", "The answer to this could define the next century of human progress."
+    ];
+
+    const questionEl = document.getElementById('question');
+    const feedbackEl = document.getElementById('feedback');
+    let shownCombinations = [];
+    const maxCombinations = subjects.length * actions.length * topics.length;
+
+    function getRandomItem(arr) {
+      const randomIndex = Math.floor(Math.random() * arr.length);
+      return { item: arr[randomIndex], index: randomIndex };
+    }
+
+    function generatePrompt() {
+      if (shownCombinations.length >= maxCombinations) {
+        questionEl.textContent = "You've seen all possible combinations! Refresh the page to start over.";
+        feedbackEl.textContent = "Congratulations on your intellectual curiosity!";
+        return;
+      }
+
+      let subject, action, topic, combinationId;
+      do {
+        subject = getRandomItem(subjects);
+        action = getRandomItem(actions);
+        topic = getRandomItem(topics);
+        combinationId = `${subject.index}-${action.index}-${topic.index}`;
+      } while (shownCombinations.includes(combinationId));
+
+      shownCombinations.push(combinationId);
+
+      const finalQuestion = `How will ${subject.item} ${action.item} ${topic.item}`;
+      questionEl.textContent = finalQuestion.charAt(0).toUpperCase() + finalQuestion.slice(1);
+      feedbackEl.textContent = getRandomItem(feedbacks).item;
+    }
+
+    // --- Corrected function to handle copying text on local files ---
+    function copyToClipboard(event, elementId) {
+      const textToCopy = document.getElementById(elementId).textContent;
+      
+      const textArea = document.createElement('textarea');
+      textArea.value = textToCopy;
+      
+      textArea.style.position = 'absolute';
+      textArea.style.left = '-9999px';
+      
+      document.body.appendChild(textArea);
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = 'COPIED!';
+        setTimeout(() => {
+          button.textContent = originalText;
+        }, 1500);
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
+      }
+      
+      document.body.removeChild(textArea);
+    }
+
+    // Load the first prompt when the page opens
+    generatePrompt();
+  </script>
+
+</body>
+</html>
